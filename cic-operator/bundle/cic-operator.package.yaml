@@ -1,4 +1,4 @@
-packageName: cic-operator
+packageName: cic-operator-with-crds
 channels:
   - name: alpha
-    currentCSV: cic-operator.v1.7.6
+    currentCSV: cic-operator.v0.0.1

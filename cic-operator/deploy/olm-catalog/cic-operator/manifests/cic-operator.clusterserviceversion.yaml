@@ -1,0 +1,222 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "charts.helm.k8s.io/v1alpha1",
+          "kind": "CitrixIngressController",
+          "metadata": {
+            "name": "cic"
+          },
+          "spec": {
+            "cic": {
+              "image": "registry.connect.redhat.com/citrix/citrix-ingress-controller:latest",
+              "pullPolicy": "IfNotPresent"
+            },
+            "defaultSSLCert": null,
+            "exporter": {
+              "image": "registry.connect.redhat.com/citrix/citrix-adc-metrics-exporter:latest",
+              "ports": {
+                "containerPort": 8888
+              },
+              "pullPolicy": "IfNotPresent",
+              "required": false
+            },
+            "ingressClass": null,
+            "kubernetesURL": null,
+            "license": {
+              "accept": false
+            },
+            "logLevel": "DEBUG",
+            "loginFileName": null,
+            "nodeWatch": false,
+            "nsIP": "x.x.x.x",
+            "nsNamespace": null,
+            "nsPort": 443,
+            "nsProtocol": "HTTPS",
+            "nsVIP": null,
+            "openshift": true
+          }
+        }
+      ]
+    capabilities: Basic Install
+  name: cic-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - kind: authpolicy
+      name: authpolicies.citrix.com
+      version: v1beta1
+    - kind: CitrixIngressController
+      name: citrixingresscontrollers.charts.helm.k8s.io
+      version: v1alpha1
+    - kind: HTTPRoute
+      name: httproutes.citrix.com
+      version: v1alpha1
+    - kind: Listener
+      name: listeners.citrix.com
+      version: v1alpha1
+    - kind: ratelimit
+      name: ratelimits.citrix.com
+      version: v1beta1
+    - kind: rewritepolicy
+      name: rewritepolicies.citrix.com
+      version: v1
+    - kind: vip
+      name: vips.citrix.com
+      version: v1
+  description: Citrix API GW is an enterprise-class solution that supports access
+    control, rate limiting and analytics in one integrated system. It can be deployed
+    on-prem, on a private cloud or deployed in a hybrid fashion where its components
+    can be distributed and deployed across multiple cloud and on-prem infrastructures.
+    Citrix API GW operator secures APIs and provides a management plane and control
+    plane for managing and monitoring APIs. This operator can be used deploy Citrix
+    Ingress Controller in an Openshift environment along with a few CRDs that will
+    assist in API Gateway features.
+  displayName: Citrix API Gateway
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - clusterroles
+          - clusterrolebindings
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps.openshift.io
+          resources:
+          - deploymentconfigs
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - get
+          - create
+        - apiGroups:
+          - apps
+          resourceNames:
+          - cic-operator
+          resources:
+          - deployments/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          - deployments
+          verbs:
+          - get
+        - apiGroups:
+          - charts.helm.k8s.io
+          resources:
+          - '*'
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - serviceaccounts
+          verbs:
+          - '*'
+        serviceAccountName: cic-operator
+      deployments:
+      - name: cic-operator
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: cic-operator
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: cic-operator
+            spec:
+              containers:
+              - env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: cic-operator
+                - name: RELATED_IMAGE_CIC
+                  value: registry.connect.redhat.com/citrix/citrix-ingress-controller:latest
+                - name: RELATED_IMAGE_EXPORTER
+                  value: registry.connect.redhat.com/citrix/citrix-adc-metrics-exporter:latest
+                image: quay.io/tejaswikonduri920/citrix-cic-operator:v0.0.1
+                imagePullPolicy: Always
+                name: cic-operator
+                resources: {}
+              serviceAccountName: cic-operator
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - ingress controller
+  - API Gateway
+  - Citrix
+  links:
+  - name: Cic Operator
+    url: https://cic-operator.domain
+  maturity: alpha
+  provider:
+    name: Citrix
+    url: https://github.com/citrix/citrix-k8s-ingress-controller
+  version: 0.0.1

@@ -1,0 +1,11 @@
+apiVersion: citrix.com/v1
+description: VIP for apache service
+kind: vip
+metadata:
+  name: service-apache
+  namespace: default
+spec:
+  description: VIP for the apache Service
+  ipaddress: 10.99.98.90
+  kind: service
+  name: apache

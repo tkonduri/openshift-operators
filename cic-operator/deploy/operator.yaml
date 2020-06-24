@@ -16,7 +16,8 @@ spec:
       containers:
         - name: cic-operator
           # Replace this with the built image name
-          image: registry.connect.redhat.com/citrix/citrix-k8s-ingress-controller:latest
+#          image: registry.connect.redhat.com/citrix/citrix-k8s-ingress-controller:latest
+          image: quay.io/tejaswikonduri920/citrix-cic-operator:v0.0.1 
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE

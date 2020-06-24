@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorSource
+metadata:
+  name: cic-operator-with-crds
+  namespace: openshift-marketplace
+spec:
+  type: appregistry
+  endpoint: https://quay.io/cnr
+  registryNamespace: tejaswikonduri920
+  displayName: "Citrix API Gateway"
+  publisher: "Citrix"
